@@ -1,0 +1,26 @@
+services:
+  api:
+    container_name: rick_and_morty_server
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: ${NODE_ENV}
+    volumes:
+      - .:/home/rick_and_morty_server
+    command: npm run start:dev
+    ports:
+      - '3000:3001'
+    links:
+      - rick_and_morty_host
+  rick_and_morty_host:
+    container_name: rick_and_morty_db
+    image: mongo
+    ports:
+      - '27017:27017'
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${USER_DB}
+      - MONGO_INITDB_ROOT_PASSWORD=${PASSWORD_DB}
+    volumes:
+      - rick_and_morty_data:/data/db
+volumes:
+  rick_and_morty_data:
