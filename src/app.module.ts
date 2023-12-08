@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import config from './env/config';
 import validations from './env/validations';
 import { enviroments } from './env/enviroment';
+import { RickAndMortyApiService } from './external-services/rick-and-morty-api/rick-and-morty-api.service';
 
 @Module({
   imports: [
@@ -18,6 +19,6 @@ import { enviroments } from './env/enviroment';
     DatabaseModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, RickAndMortyApiService],
 })
 export class AppModule {}
