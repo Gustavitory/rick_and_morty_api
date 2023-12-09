@@ -2,6 +2,16 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import config from 'src/env/config';
+import { StatusType, StatusTypeSchema } from './schemas/statusType.schema';
+import { StatusAsoc, StatusAsocSchema } from './schemas/statusAsoc.schema';
+import { Category, CategorySchema } from './schemas/category.schema';
+import { Subcategory, SubcategorySchema } from './schemas/subcategory.schema';
+import { Character, CharacterSchema } from './schemas/character.schema';
+import { Episode, EpisodeSchema } from './schemas/episode.schema';
+import {
+  Participation,
+  ParticipationSchema,
+} from './schemas/participation.schema';
 
 @Global()
 @Module({
@@ -20,6 +30,15 @@ import config from 'src/env/config';
       },
       inject: [config.KEY],
     }),
+    MongooseModule.forFeature([
+      { name: StatusType.name, schema: StatusTypeSchema },
+      { name: StatusAsoc.name, schema: StatusAsocSchema },
+      { name: Category.name, schema: CategorySchema },
+      { name: Subcategory.name, schema: SubcategorySchema },
+      { name: Character.name, schema: CharacterSchema },
+      { name: Episode.name, schema: EpisodeSchema },
+      { name: Participation.name, schema: ParticipationSchema },
+    ]),
   ],
 })
 export class DatabaseModule {}
