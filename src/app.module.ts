@@ -7,6 +7,7 @@ import config from './env/config';
 import validations from './env/validations';
 import { enviroments } from './env/enviroment';
 import { RickAndMortyApiService } from './external-services/rick-and-morty-api/rick-and-morty-api.service';
+import { CharacterModule } from './modules/character/character.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { RickAndMortyApiService } from './external-services/rick-and-morty-api/r
       validationSchema: validations,
     }),
     DatabaseModule,
+    CharacterModule,
   ],
   controllers: [AppController],
   providers: [AppService, RickAndMortyApiService],

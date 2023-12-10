@@ -6,7 +6,7 @@ export type SubcategoryDocument = HydratedDocument<Subcategory>;
 @Schema()
 export class Subcategory {
   @Prop({ required: true })
-  subcategory: string[];
+  subcategory: string;
   //PARA SPECIES SERIA TIPO HUMAN,ALIEN,ETC...
   //PARA SEASON SERIA TIPO SEASON1,SEASON2,SEASON3...
 }

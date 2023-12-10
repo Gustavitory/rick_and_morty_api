@@ -13,6 +13,12 @@ export class Character {
 
   @Prop({ type: Types.ObjectId, ref: 'Category' })
   category: Types.ObjectId;
+
+  @Prop()
+  url: string;
 }
 
-export const CharacterSchema = SchemaFactory.createForClass(Character);
+export const CharacterSchema = SchemaFactory.createForClass(Character).set(
+  'autoIndex',
+  true,
+);

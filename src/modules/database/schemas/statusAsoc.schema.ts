@@ -11,5 +11,5 @@ export class StatusAsoc {
   @Prop({ required: true })
   status: string[];
 }
-//estados para CHARACTERS=>ACTIVE || SUSPENDED; para EPISODES=> CANCELLED || ACTIVE
+//status para CHARACTERS=>ACTIVE || SUSPENDED; para EPISODES=> CANCELLED || ACTIVE
 export const StatusAsocSchema = SchemaFactory.createForClass(StatusAsoc);

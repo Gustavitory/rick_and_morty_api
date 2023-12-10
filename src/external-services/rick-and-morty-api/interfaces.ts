@@ -13,6 +13,18 @@ export interface Character {
   created: Date;
 }
 
+export interface info {
+  count: number;
+  pages: number;
+  next: string | null;
+  prev: string | null;
+}
+
+export interface perPageApiResponse {
+  info: info;
+  results: Character[] | Episode[];
+}
+
 export interface Location {
   id: number;
   name: string;
@@ -26,9 +38,9 @@ export interface Location {
 export interface Episode {
   id: number;
   name: string;
-  type: string;
-  dimension: string;
-  residents: string[];
+  air_date: string;
+  episode: string;
+  characters: string[];
   url: string;
   created: Date;
 }

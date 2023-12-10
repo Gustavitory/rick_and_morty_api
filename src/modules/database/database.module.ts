@@ -12,6 +12,8 @@ import {
   Participation,
   ParticipationSchema,
 } from './schemas/participation.schema';
+import { DatabaseService } from './database.service';
+import { RickAndMortyApiService } from 'src/external-services/rick-and-morty-api/rick-and-morty-api.service';
 
 @Global()
 @Module({
@@ -40,5 +42,6 @@ import {
       { name: Participation.name, schema: ParticipationSchema },
     ]),
   ],
+  providers: [DatabaseService, RickAndMortyApiService],
 })
 export class DatabaseModule {}
