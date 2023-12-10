@@ -10,9 +10,10 @@ export class Category {
 
   @Prop({
     required: true,
-    type: [{ type: Types.ObjectId, ref: 'Subcategory' }],
+    type: Types.ObjectId,
+    ref: 'Subcategory',
   })
-  subcategories: Types.ObjectId[];
+  subcategories: Types.ObjectId;
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);

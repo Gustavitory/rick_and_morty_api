@@ -9,7 +9,7 @@ services:
       - .:/home/rick_and_morty_server
     command: npm run start:dev
     ports:
-      - '3000:3001'
+      - '3000:3000'
     links:
       - rick_and_morty_host
   rick_and_morty_host:

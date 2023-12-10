@@ -63,59 +63,44 @@ export class DatabaseService implements OnModuleInit {
       if (allCharacters.length > 0) {
         await Promise.all(
           allCharacters.map(async (character) => {
-            const { name, status, species, url } = character;
+            const { name, species, url } = character;
             const existCharacter = await this.characterModel.findOne({ name });
             if (!existCharacter) {
               const statusType = await this.statusTypeModel.findOne({
                 type: 'CHARACTERS',
               });
-              const existAsocStatus = await this.statusAsocModel.findOne({
-                type: statusType,
-                status,
-              });
-              const asocStatus = !existAsocStatus
-                ? await new this.statusAsocModel({
-                    type: statusType,
-                    status,
-                  }).save()
-                : existAsocStatus;
-              const existSubCat = await this.subcategoryModel.findOne({
-                subcategory: species,
-              });
-              const subCat = !existSubCat
-                ? await new this.subcategoryModel({
-                    subcategory: species,
-                  }).save()
-                : existSubCat;
-              const existCat = await this.categoryModel.findOne({
-                category: 'SPECIES',
-                subcategories: subCat,
-              });
-              const cat = !existCat
-                ? await new this.categoryModel({
-                    category: 'SPECIES',
-                    subcategories: subCat,
-                  }).save()
-                : existCat;
+              const asocStatus = await this.statusAsocModel.findOneAndUpdate(
+                {
+                  type: statusType,
+                  status: 'ACTIVE',
+                },
+                {},
+                { new: true, upsert: true },
+              );
+              const subCat = await this.subcategoryModel.findOneAndUpdate(
+                {
+                  subcategory: species.toUpperCase(),
+                },
+                {},
+                { new: true, upsert: true },
+              );
+              const cat = await this.categoryModel.findOneAndUpdate(
+                {
+                  category: 'SPECIES',
+                  subcategories: subCat,
+                },
+                {},
+                { new: true, upsert: true },
+              );
 
-              const newCharacter = new this.characterModel({
+              await this.characterModel.create({
                 name,
                 status: asocStatus,
                 category: cat,
                 url,
               });
-              await newCharacter.save();
             }
           }),
-        );
-        console.log(
-          (
-            await this.characterModel
-              .find()
-              .populate('category')
-              .populate('status')
-              .exec()
-          ).length,
         );
       }
     } catch {}
@@ -181,24 +166,15 @@ export class DatabaseService implements OnModuleInit {
             }
           }),
         );
-        console.log(
-          (
-            await this.episodeModel
-              .find()
-              .populate('category')
-              .populate('status')
-              .exec()
-          )[0],
-        );
       }
     } catch {}
   }
-  private async clearAndRecreateCollection() {
-    try {
-      await this.characterModel.collection.drop();
-      console.log('Colección User eliminada y recreada.');
-    } catch (error) {
-      console.error('Error al eliminar y recrear la colección:', error);
-    }
-  }
+  // private async clearAndRecreateCollection() {
+  //   try {
+  //     await this.characterModel.collection.drop();
+  //     console.log('Colección User eliminada y recreada.');
+  //   } catch (error) {
+  //     console.error('Error al eliminar y recrear la colección:', error);
+  //   }
+  // }
 }

@@ -43,5 +43,6 @@ import { RickAndMortyApiService } from 'src/external-services/rick-and-morty-api
     ]),
   ],
   providers: [DatabaseService, RickAndMortyApiService],
+  exports: [MongooseModule],
 })
 export class DatabaseModule {}
