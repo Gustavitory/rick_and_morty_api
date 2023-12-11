@@ -13,8 +13,6 @@ export class Participation {
 
   @Prop({ type: Types.ObjectId, ref: 'Character' })
   character: Types.ObjectId;
-  @Prop({ type: Types.ObjectId, ref: 'StatusAsoc' })
-  characterStatus: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Episode' })
   episode: Types.ObjectId;

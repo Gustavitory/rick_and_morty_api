@@ -164,9 +164,8 @@ export class DatabaseService implements OnModuleInit {
               }).save();
               await Promise.all(
                 episode.participation.map(async (el) => {
-                  const char = await this.characterModel.findById(el).exec();
+                  await this.characterModel.findById(el).exec();
                   await new this.participationModel({
-                    characterStatus: char.status,
                     episode: episode._id,
                     character: el,
                   }).save();

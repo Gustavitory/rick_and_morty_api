@@ -52,7 +52,6 @@ export class ParticipationService {
     try {
       const totalItems = await this.participationModel.countDocuments(filter);
       const totalPages = Math.ceil(totalItems / itemsPerPage);
-      console.log(filter);
       const episodes = await this.participationModel
         .find(filter)
         .populate({ path: 'character', populate: { path: 'status' } })
@@ -99,22 +98,22 @@ export class ParticipationService {
     for (let i = 0; i < parti.participations.length; i++) {
       const { init, finish } = parti.participations[i];
       if (
-        this.timing(init) > this.timing(times.init) &&
-        this.timing(times.finish) > this.timing(finish)
+        this.timing(init) >= this.timing(times.init) &&
+        this.timing(times.finish) >= this.timing(finish)
       ) {
         isValid = false;
         break;
       }
       if (
-        this.timing(init) < this.timing(times.init) &&
-        this.timing(times.init) < this.timing(finish)
+        this.timing(init) <= this.timing(times.init) &&
+        this.timing(times.init) <= this.timing(finish)
       ) {
         isValid = false;
         break;
       }
       if (
-        this.timing(init) < this.timing(times.finish) &&
-        this.timing(times.finish) < this.timing(finish)
+        this.timing(init) <= this.timing(times.finish) &&
+        this.timing(times.finish) <= this.timing(finish)
       ) {
         isValid = false;
         break;
@@ -123,8 +122,8 @@ export class ParticipationService {
 
     if (isValid) {
       parti.participations.push(times);
-      await parti.save();
-    }
+      return await parti.save();
+    } else throw new BadRequestException('Tiempos ocupados');
   }
 
   timing(time: string) {
