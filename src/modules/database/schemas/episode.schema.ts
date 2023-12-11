@@ -17,7 +17,7 @@ export class Episode {
   @Prop()
   duration: string;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Participation' }] })
+  @Prop({ type: Types.ObjectId, ref: 'Character' })
   participation: Types.ObjectId[];
 
   @Prop()

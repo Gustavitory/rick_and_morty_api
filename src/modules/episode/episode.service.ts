@@ -9,7 +9,6 @@ import { Episode, EpisodeDocument } from '../database/schemas/episode.schema';
 import { CategoryService } from '../category/category.service';
 import { TypeService } from '../type/type.service';
 import { CreateEpisodeDTO, EditEpisodeDTO } from './espisode.dto';
-import { Character } from '../database/schemas/character.schema';
 
 @Injectable()
 export class EpisodeService {
@@ -64,15 +63,7 @@ export class EpisodeService {
     } catch (err) {}
   }
   async createEpisode(info: CreateEpisodeDTO) {
-    const {
-      name,
-      air_date,
-      duration,
-      episode,
-      participation,
-      season,
-      status: std,
-    } = info;
+    const { name, air_date, duration, episode, season, status: std } = info;
     const existEpisode = await this.episodeModel.findOne({
       name,
       'category.subcategories.subcategory': `SEASON ${
@@ -148,5 +139,19 @@ export class EpisodeService {
       .exec();
     if (!updatedEpisode) throw new NotFoundException('Episodio no encontrado');
     return updatedEpisode;
+  }
+
+  async participationsForCharacter(episodioId: string, characterId: string) {
+    return await this.episodeModel
+      .findById(episodioId)
+      .populate({
+        path: 'participation',
+        match: { 'participation.character': characterId },
+        populate: { path: 'participation.character' },
+      })
+      .exec();
+  }
+  async finForId(id: string) {
+    return await this.episodeModel.findOne({ _id: id });
   }
 }

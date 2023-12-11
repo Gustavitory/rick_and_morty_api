@@ -174,4 +174,8 @@ export class CharacterService {
 
     return updatedCharacter;
   }
+
+  async findACharacter(characterID: string) {
+    return await this.characterModel.findOne({ _id: characterID });
+  }
 }

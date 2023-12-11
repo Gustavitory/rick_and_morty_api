@@ -41,10 +41,7 @@ export class EpisodeController {
   }
 
   @Put('delete/:id')
-  async deleteEpisode(
-    @Body() changes: EditEpisodeDTO,
-    @Param('id') episodeId: string,
-  ) {
+  async deleteEpisode(@Param('id') episodeId: string) {
     try {
       return await this.episodeService.editEpisode(episodeId, {
         status: 'CANCELED',

@@ -113,7 +113,7 @@ export class DatabaseService implements OnModuleInit {
       if (allEpisodes.length > 0) {
         await Promise.all(
           allEpisodes.map(async (epis) => {
-            const { name, episode, characters, air_date } = epis;
+            const { name, episode: ode, characters, air_date } = epis;
             const existEpisode = await this.episodeModel.findOne({ name });
             if (!existEpisode) {
               const statusType = await this.statusTypeModel.findOne({
@@ -129,7 +129,7 @@ export class DatabaseService implements OnModuleInit {
               );
               const subCat = await this.subcategoryModel.findOneAndUpdate(
                 {
-                  subcategory: 'SEASON ' + episode.split('E')[0].slice(1),
+                  subcategory: 'SEASON ' + ode.split('E')[0].slice(1),
                 },
                 {},
                 { new: true, upsert: true },
@@ -145,24 +145,33 @@ export class DatabaseService implements OnModuleInit {
               );
               const participations = await Promise.all(
                 characters.map(async (url: string) => {
-                  const char = await this.characterModel.findOne({ url });
-                  if (char) {
-                    return await new this.participationModel({
-                      character: char,
-                    }).save();
-                  }
+                  const char = await this.characterModel
+                    .findOne({
+                      url: url,
+                    })
+                    .exec();
+                  return char._id;
                 }),
               );
-
-              await new this.episodeModel({
+              const episode = await new this.episodeModel({
                 name,
                 status: asocStatus,
                 category: cat,
-                participation: participations,
-                episode,
+                episode: ode,
                 air_date,
                 duration: '20:30',
+                participation: participations,
               }).save();
+              await Promise.all(
+                episode.participation.map(async (el) => {
+                  const char = await this.characterModel.findById(el).exec();
+                  await new this.participationModel({
+                    characterStatus: char.status,
+                    episode: episode._id,
+                    character: el,
+                  }).save();
+                }),
+              );
             }
           }),
         );
@@ -172,6 +181,8 @@ export class DatabaseService implements OnModuleInit {
   private async clearAndRecreateCollection() {
     try {
       await this.episodeModel.collection.drop();
+      await this.participationModel.collection.drop();
+      await this.characterModel.collection.drop();
       console.log('Colección User eliminada y recreada.');
     } catch (error) {
       console.error('Error al eliminar y recrear la colección:', error);

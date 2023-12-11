@@ -19,5 +19,6 @@ import { TypeModule } from '../type/type.module';
     CategoryModule,
     TypeModule,
   ],
+  exports: [CharacterService],
 })
 export class CharacterModule {}

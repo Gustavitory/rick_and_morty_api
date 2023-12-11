@@ -23,10 +23,12 @@ export class TypeService {
     const statusType = await this.statusTypeModel.findOne({
       type: type.toUpperCase(),
     });
-    return await this.statusAsocModel.findOne({
-      status,
-      type: statusType,
-    });
+    return await this.statusAsocModel
+      .findOne({
+        status,
+        type: statusType,
+      })
+      .exec();
   }
 
   async findOrCreateStatus(
