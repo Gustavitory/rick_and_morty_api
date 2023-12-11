@@ -8,6 +8,10 @@ import validations from './env/validations';
 import { enviroments } from './env/enviroment';
 import { RickAndMortyApiService } from './external-services/rick-and-morty-api/rick-and-morty-api.service';
 import { CharacterModule } from './modules/character/character.module';
+import { EpisodeModule } from './modules/episode/episode.module';
+import { CategoryModule } from './modules/category/category.module';
+import { TypeModule } from './modules/type/type.module';
+import { ParticipationModule } from './modules/participation/participation.module';
 
 @Module({
   imports: [
@@ -19,6 +23,10 @@ import { CharacterModule } from './modules/character/character.module';
     }),
     DatabaseModule,
     CharacterModule,
+    EpisodeModule,
+    CategoryModule,
+    TypeModule,
+    ParticipationModule,
   ],
   controllers: [AppController],
   providers: [AppService, RickAndMortyApiService],

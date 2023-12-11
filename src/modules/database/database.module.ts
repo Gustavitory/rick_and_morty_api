@@ -21,7 +21,6 @@ import { RickAndMortyApiService } from 'src/external-services/rick-and-morty-api
     MongooseModule.forRootAsync({
       useFactory: (configService: ConfigType<typeof config>) => {
         const pass = configService.PASSWORD_DB;
-        console.log('content: ', pass);
         const host = configService.DB_HOST;
         const port = configService.DB_PORT;
         const name = configService.DB_NAME;

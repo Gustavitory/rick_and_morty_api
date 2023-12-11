@@ -8,7 +8,7 @@ export class CharacterController {
 
   @Get()
   async getAllCharacters(
-    @Query('type') type: string,
+    @Query('type') type: 'ACTIVE' | 'SUSPENDED' | 'CANCELED',
     @Query('species') species: string,
     @Query('page') page: number,
   ) {

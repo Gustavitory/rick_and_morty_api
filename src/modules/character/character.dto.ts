@@ -11,11 +11,19 @@ export class CreateCharacterDTO {
 
   @IsString()
   @IsNotEmpty()
-  readonly status: string;
+  readonly status: 'ACTIVE' | 'SUSPENDED' | 'CANCELED';
 
   @IsString()
   @IsOptional()
   readonly url?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  readonly state: string;
+
+  @IsString()
+  @IsNotEmpty()
+  readonly gender: string;
 }
 
 export class UpdateCharacterDTO {
@@ -29,9 +37,21 @@ export class UpdateCharacterDTO {
 
   @IsString()
   @IsOptional()
-  readonly status?: string;
+  readonly status?: 'ACTIVE' | 'SUSPENDED' | 'CANCELED';
 
   @IsString()
   @IsOptional()
   readonly url?: string;
+
+  @IsString()
+  @IsOptional()
+  readonly state?: string;
+
+  @IsString()
+  @IsOptional()
+  readonly gender?: string;
+
+  @IsString()
+  @IsOptional()
+  readonly image?: string;
 }

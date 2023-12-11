@@ -7,6 +7,10 @@ export type CharacterDocument = HydratedDocument<Character>;
 export class Character {
   @Prop()
   name: string;
+  @Prop()
+  state: string;
+  @Prop()
+  gender: string;
 
   @Prop({ type: Types.ObjectId, ref: 'StatusAsoc' })
   status: Types.ObjectId;

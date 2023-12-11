@@ -19,6 +19,12 @@ export class Episode {
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Participation' }] })
   participation: Types.ObjectId[];
+
+  @Prop()
+  air_date: string;
+
+  @Prop()
+  episode: string;
 }
 
 export const EpisodeSchema = SchemaFactory.createForClass(Episode);

@@ -55,7 +55,6 @@ export class DatabaseService implements OnModuleInit {
         }
       }),
     );
-    console.log(await this.statusTypeModel.find().exec());
   }
   async chargeCharactersDataBase() {
     try {
@@ -63,7 +62,7 @@ export class DatabaseService implements OnModuleInit {
       if (allCharacters.length > 0) {
         await Promise.all(
           allCharacters.map(async (character) => {
-            const { name, species, url } = character;
+            const { species, url, name, status: sta, gender } = character;
             const existCharacter = await this.characterModel.findOne({ name });
             if (!existCharacter) {
               const statusType = await this.statusTypeModel.findOne({
@@ -98,6 +97,8 @@ export class DatabaseService implements OnModuleInit {
                 status: asocStatus,
                 category: cat,
                 url,
+                state: sta,
+                gender,
               });
             }
           }),
@@ -112,40 +113,36 @@ export class DatabaseService implements OnModuleInit {
       if (allEpisodes.length > 0) {
         await Promise.all(
           allEpisodes.map(async (epis) => {
-            const { name, episode, characters } = epis;
+            const { name, episode, characters, air_date } = epis;
             const existEpisode = await this.episodeModel.findOne({ name });
             if (!existEpisode) {
               const statusType = await this.statusTypeModel.findOne({
                 type: 'EPISODES',
               });
-              const existAsocStatus = await this.statusAsocModel.findOne({
-                type: statusType,
-                status: 'ACTIVE',
-              });
-              const asocStatus = !existAsocStatus
-                ? await new this.statusAsocModel({
-                    type: statusType,
-                    status: 'ACTIVE',
-                  }).save()
-                : existAsocStatus;
-              const existSubCat = await this.subcategoryModel.findOne({
-                subcategory: 'SEASON ' + episode.split('E')[0].slice(1),
-              });
-              const subCat = !existSubCat
-                ? await new this.subcategoryModel({
-                    subcategory: 'SEASON ' + episode.split('E')[0].slice(1),
-                  }).save()
-                : existSubCat;
-              const existCat = await this.categoryModel.findOne({
-                category: 'SEASON',
-                subcategories: subCat,
-              });
-              const cat = !existCat
-                ? await new this.categoryModel({
-                    category: 'SEASON',
-                    subcategories: subCat,
-                  }).save()
-                : existCat;
+              const asocStatus = await this.statusAsocModel.findOneAndUpdate(
+                {
+                  type: statusType,
+                  status: 'ACTIVE',
+                },
+                {},
+                { new: true, upsert: true },
+              );
+              const subCat = await this.subcategoryModel.findOneAndUpdate(
+                {
+                  subcategory: 'SEASON ' + episode.split('E')[0].slice(1),
+                },
+                {},
+                { new: true, upsert: true },
+              );
+
+              const cat = await this.categoryModel.findOneAndUpdate(
+                {
+                  category: 'SEASON',
+                  subcategories: subCat,
+                },
+                {},
+                { new: true, upsert: true },
+              );
               const participations = await Promise.all(
                 characters.map(async (url: string) => {
                   const char = await this.characterModel.findOne({ url });
@@ -162,6 +159,9 @@ export class DatabaseService implements OnModuleInit {
                 status: asocStatus,
                 category: cat,
                 participation: participations,
+                episode,
+                air_date,
+                duration: '20:30',
               }).save();
             }
           }),
@@ -169,12 +169,12 @@ export class DatabaseService implements OnModuleInit {
       }
     } catch {}
   }
-  // private async clearAndRecreateCollection() {
-  //   try {
-  //     await this.characterModel.collection.drop();
-  //     console.log('Colección User eliminada y recreada.');
-  //   } catch (error) {
-  //     console.error('Error al eliminar y recrear la colección:', error);
-  //   }
-  // }
+  private async clearAndRecreateCollection() {
+    try {
+      await this.episodeModel.collection.drop();
+      console.log('Colección User eliminada y recreada.');
+    } catch (error) {
+      console.error('Error al eliminar y recrear la colección:', error);
+    }
+  }
 }

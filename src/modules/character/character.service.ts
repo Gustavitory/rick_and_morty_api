@@ -9,67 +9,40 @@ import {
   CharacterDocument,
 } from '../database/schemas/character.schema';
 import { Model } from 'mongoose';
-import {
-  StatusType,
-  StatusTypeDocument,
-} from '../database/schemas/statusType.schema';
-import {
-  StatusAsoc,
-  StatusAsocDocument,
-} from '../database/schemas/statusAsoc.schema';
-import {
-  Subcategory,
-  SubcategoryDocument,
-} from '../database/schemas/subcategory.schema';
-import {
-  Category,
-  CategoryDocument,
-} from '../database/schemas/category.schema';
-import { UpdateCharacterDTO } from './character.dto';
+import { CreateCharacterDTO, UpdateCharacterDTO } from './character.dto';
+import { CategoryService } from '../category/category.service';
+import { TypeService } from '../type/type.service';
 
 @Injectable()
 export class CharacterService {
   constructor(
     @InjectModel(Character.name)
     private characterModel: Model<CharacterDocument>,
-    @InjectModel(StatusType.name)
-    private statusTypeModel: Model<StatusTypeDocument>,
-    @InjectModel(StatusAsoc.name)
-    private statusAsocModel: Model<StatusAsocDocument>,
-    @InjectModel(Subcategory.name)
-    private subcategoryModel: Model<SubcategoryDocument>,
-    @InjectModel(Category.name)
-    private categoryModel: Model<CategoryDocument>,
+    private readonly categoryService: CategoryService,
+    private readonly typeService: TypeService,
   ) {}
 
-  async getAllCharacters(type?: string, species?: string, page: number = 1) {
+  async getAllCharacters(
+    type?: 'ACTIVE' | 'SUSPENDED' | 'CANCELED',
+    species?: string,
+    page: number = 1,
+  ) {
     if (page < 1) {
       throw new Error('El número de página debe ser mayor o igual a 1.');
     }
     const itemsPerPage = 5;
     const filter = {};
     if (species) {
-      const subcategory = await this.subcategoryModel.findOne({
-        subcategory: species.toUpperCase(),
-      });
-
-      const category = await this.categoryModel.findOne({
-        category: 'SPECIES',
-        subcategories: subcategory,
-      });
-
+      const category = await this.categoryService.findCat(
+        species.toUpperCase(),
+        'SPECIES',
+      );
       if (category) {
         filter['category'] = category._id;
       }
     }
     if (type) {
-      const statusType = await this.statusTypeModel.findOne({
-        type: 'CHARACTERS',
-      });
-      const statusAsoc = await this.statusAsocModel.findOne({
-        status: type.toUpperCase(),
-        type: statusType,
-      });
+      const statusAsoc = await this.typeService.findStatus('CHARACTERS', type);
       if (statusAsoc) {
         filter['status'] = statusAsoc._id;
       }
@@ -77,7 +50,6 @@ export class CharacterService {
     try {
       const totalItems = await this.characterModel.countDocuments(filter);
       const totalPages = Math.ceil(totalItems / itemsPerPage);
-      console.log(filter);
       const characters = await this.characterModel
         .find(filter)
         .skip((page - 1) * itemsPerPage)
@@ -104,13 +76,8 @@ export class CharacterService {
       throw new BadRequestException(`Query error: ${err}`);
     }
   }
-  async createCharacter(info: {
-    name: string;
-    specie: string;
-    status: string;
-    url?: string;
-  }) {
-    const { url, name, specie, status: type } = info;
+  async createCharacter(info: CreateCharacterDTO) {
+    const { url, name, specie, status: type, state, gender } = info;
     const existingCharacter = await this.characterModel.findOne({
       name,
       'status.status': type.toUpperCase(),
@@ -122,84 +89,58 @@ export class CharacterService {
         'Ya existe un personaje con el mismo nombre, especie y tipo.',
       );
     }
-    const statusType = await this.statusTypeModel.findOneAndUpdate(
-      { type: 'CHARACTERS' },
-      {},
-      { new: true, upsert: true },
+    const status = await this.typeService.findOrCreateStatus(
+      'CHARACTERS',
+      type,
     );
-    const status = await this.statusAsocModel.findOneAndUpdate(
-      { type: statusType, status: type.toUpperCase() },
-      {},
-      { new: true, upsert: true },
-    );
-    const subCat = await this.subcategoryModel.findOneAndUpdate(
-      { subcategory: specie.toUpperCase() },
-      {},
-      { new: true, upsert: true },
-    );
-    const category = await this.categoryModel.findOneAndUpdate(
-      { category: 'SPECIES', subcategories: subCat },
-      {},
-      { new: true, upsert: true },
+    const category = await this.categoryService.findOrCreateCat(
+      specie.toUpperCase(),
+      'SPECIES',
     );
     const newCharacter = new this.characterModel({
       name,
       status,
       category,
       url,
+      state,
+      gender,
     });
     await newCharacter.save();
     return newCharacter;
   }
   async updateCharacter(characterId: string, updatedData: UpdateCharacterDTO) {
     // Obtener las propiedades específicas a actualizar
-    const { name, specie, status } = updatedData;
-
-    // Validar que no haya otro personaje con la misma especie, estado y nombre
+    const { name, specie, status, url, state, gender, image } = updatedData;
     const filter: Record<string, any> = {
       _id: { $ne: characterId }, // Excluir el personaje actual de la búsqueda
     };
-    if (specie) {
-      const subcategory = await this.subcategoryModel.findOneAndUpdate(
-        {
-          subcategory: specie.toUpperCase(),
-        },
-        {},
-        { new: true, upsert: true },
-      );
+    if (name || specie || status) {
+      // Validar que no haya otro personaje con la misma especie, estado y nombre
+      const oldCharacter = await this.characterModel
+        .findOne({
+          _id: characterId,
+        })
+        .exec();
+      if (specie) {
+        const category = await this.categoryService.findOrCreateCat(
+          specie.toUpperCase(),
+          'SPECIES',
+        );
+        if (category) {
+          filter['category'] = category._id;
+        }
+      } else filter['category'] = oldCharacter.category._id;
+      if (status) {
+        const statusAsoc = await this.typeService.findOrCreateStatus(
+          'CHARACTERS',
+          status,
+        );
+        if (statusAsoc) {
+          filter['status'] = statusAsoc._id;
+        }
+      } else filter['status'] = oldCharacter.status._id;
 
-      const category = await this.categoryModel.findOneAndUpdate(
-        {
-          category: 'SPECIES',
-          subcategories: subcategory,
-        },
-        {},
-        { new: true, upsert: true },
-      );
-
-      if (category) {
-        filter['category'] = category._id;
-      }
-    }
-    if (status) {
-      const statusType = await this.statusTypeModel.findOne({
-        type: 'CHARACTERS',
-      });
-      const statusAsoc = await this.statusAsocModel.findOneAndUpdate(
-        {
-          status: status.toUpperCase(),
-          type: statusType,
-        },
-        {},
-        { new: true, upsert: true },
-      );
-      if (statusAsoc) {
-        filter['status'] = statusAsoc._id;
-      }
-    }
-
-    if (name) {
-      filter.name = name;
+      filter.name = name ?? oldCharacter.name;
       const existingCharacter = await this.characterModel.findOne(filter);
 
       if (existingCharacter) {
@@ -214,6 +155,10 @@ export class CharacterService {
     if (name) updateFields.name = name;
     if (specie) updateFields.category = filter['category'];
     if (status) updateFields.status = filter['status'];
+    if (url) updateFields.url = url;
+    if (state) updateFields.state = state;
+    if (gender) updateFields.gender = gender;
+    if (image) updateFields.image = image;
     // Actualizar el personaje utilizando findOneAndUpdate
     const updatedCharacter = await this.characterModel
       .findOneAndUpdate(
