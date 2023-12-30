@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
-
-export type ParticipationDocument = HydratedDocument<Participation>;
+import { Types, HydratedDocument } from 'mongoose';
+import { Character } from './character.schema';
+import { Episode } from './episode.schema';
 
 @Schema()
 export class Participation {
@@ -11,11 +11,11 @@ export class Participation {
     finish: string;
   }[];
 
-  @Prop({ type: Types.ObjectId, ref: 'Character' })
-  character: Types.ObjectId;
+  @Prop({ type: () => Types.ObjectId, ref: 'Character' })
+  character: Character;
 
-  @Prop({ type: Types.ObjectId, ref: 'Episode' })
-  episode: Types.ObjectId;
+  @Prop({ type: () => Types.ObjectId, ref: 'Episode' })
+  episode: Episode;
 }
-
+export type ParticipationDocument = HydratedDocument<Participation>;
 export const ParticipationSchema = SchemaFactory.createForClass(Participation);

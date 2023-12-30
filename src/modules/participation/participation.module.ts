@@ -6,9 +6,7 @@ import {
   ParticipationSchema,
 } from '../database/schemas/participation.schema';
 import { EpisodeModule } from '../episode/episode.module';
-import { CharacterModule } from '../character/character.module';
 import { ParticipationController } from './participation.controller';
-import { TypeModule } from '../type/type.module';
 
 @Module({
   providers: [ParticipationService],
@@ -17,8 +15,6 @@ import { TypeModule } from '../type/type.module';
       { name: Participation.name, schema: ParticipationSchema },
     ]),
     EpisodeModule,
-    CharacterModule,
-    TypeModule,
   ],
   controllers: [ParticipationController],
 })

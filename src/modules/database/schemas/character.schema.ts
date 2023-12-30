@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { StatusAsocDocument } from './statusAsoc.schema';
+import { CategoryDocument } from './category.schema';
 
 export type CharacterDocument = HydratedDocument<Character>;
 
@@ -12,11 +14,11 @@ export class Character {
   @Prop()
   gender: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'StatusAsoc' })
-  status: Types.ObjectId;
+  @Prop({ type: () => Types.ObjectId, ref: 'StatusAsoc' })
+  status: Types.ObjectId | StatusAsocDocument;
 
-  @Prop({ type: Types.ObjectId, ref: 'Category' })
-  category: Types.ObjectId;
+  @Prop({ type: () => Types.ObjectId, ref: 'Category' })
+  category: Types.ObjectId | CategoryDocument;
 
   @Prop()
   url: string;
