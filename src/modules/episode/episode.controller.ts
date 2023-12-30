@@ -1,7 +1,9 @@
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { EpisodeService } from './episode.service';
-import { CreateEpisodeDTO, EditEpisodeDTO } from './espisode.dto';
+import { CreateEpisodeDTO, EditEpisodeDTO, StatusEnum } from './espisode.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Episodes')
 @Controller('episode')
 export class EpisodeController {
   constructor(private readonly episodeService: EpisodeService) {}
@@ -44,7 +46,7 @@ export class EpisodeController {
   async deleteEpisode(@Param('id') episodeId: string) {
     try {
       return await this.episodeService.editEpisode(episodeId, {
-        status: 'CANCELED',
+        status: StatusEnum.CANCELED,
       });
     } catch (err) {
       return { error: err.message };

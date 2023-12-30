@@ -1,6 +1,9 @@
 import { Body, Controller, Delete, Get, Put, Query } from '@nestjs/common';
 import { ParticipationService } from './participation.service';
+import { CreateParticipationDTO } from './participation.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Participations')
 @Controller('participation')
 export class ParticipationController {
   constructor(private readonly participationService: ParticipationService) {}
@@ -24,11 +27,7 @@ export class ParticipationController {
   @Put('add')
   async addParticipation(
     @Body()
-    info: {
-      episode: string;
-      character: string;
-      times: { init: string; finish: string };
-    },
+    info: CreateParticipationDTO,
   ) {
     const { episode, character, times } = info;
     return this.participationService.addParticipation(

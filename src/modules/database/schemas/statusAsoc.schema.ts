@@ -8,7 +8,7 @@ export class StatusAsoc {
   @Prop({ required: true })
   status: string;
 
-  @Prop({ required: true, type: Types.ObjectId, ref: 'StatusType' })
+  @Prop({ required: true, type: () => Types.ObjectId, ref: 'StatusType' })
   type: Types.ObjectId;
 }
 //status para CHARACTERS=>ACTIVE || SUSPENDED; para EPISODES=> CANCELLED || ACTIVE

@@ -10,8 +10,6 @@ import {
 } from '../database/schemas/participation.schema';
 import { Model } from 'mongoose';
 import { EpisodeService } from '../episode/episode.service';
-import { CharacterService } from '../character/character.service';
-import { TypeService } from '../type/type.service';
 
 @Injectable()
 export class ParticipationService {
@@ -19,8 +17,6 @@ export class ParticipationService {
     @InjectModel(Participation.name)
     private participationModel: Model<ParticipationDocument>,
     private readonly episodeService: EpisodeService,
-    private readonly characterService: CharacterService,
-    private readonly statusService: TypeService,
   ) {}
   async getParticipations(
     // characterStatus?: 'ACTIVE' | 'SUSPENDED',

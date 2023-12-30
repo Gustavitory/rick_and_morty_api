@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
+export enum ECharacterStatus {
+  ACTIVE = 'ACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  CANCELED = 'CANCELED',
+}
 
 export class CreateCharacterDTO {
   @IsString()
@@ -9,9 +15,9 @@ export class CreateCharacterDTO {
   @IsNotEmpty()
   readonly specie: string;
 
-  @IsString()
+  @IsEnum(ECharacterStatus)
   @IsNotEmpty()
-  readonly status: 'ACTIVE' | 'SUSPENDED' | 'CANCELED';
+  readonly status: ECharacterStatus;
 
   @IsString()
   @IsOptional()
@@ -29,29 +35,29 @@ export class CreateCharacterDTO {
 export class UpdateCharacterDTO {
   @IsString()
   @IsOptional()
-  readonly name?: string;
+  name?: string;
 
   @IsString()
   @IsOptional()
-  readonly specie?: string;
+  specie?: string;
+
+  @IsEnum(ECharacterStatus)
+  @IsOptional()
+  status?: ECharacterStatus;
 
   @IsString()
   @IsOptional()
-  readonly status?: 'ACTIVE' | 'SUSPENDED' | 'CANCELED';
+  url?: string;
 
   @IsString()
   @IsOptional()
-  readonly url?: string;
+  state?: string;
 
   @IsString()
   @IsOptional()
-  readonly state?: string;
+  gender?: string;
 
   @IsString()
   @IsOptional()
-  readonly gender?: string;
-
-  @IsString()
-  @IsOptional()
-  readonly image?: string;
+  image?: string;
 }

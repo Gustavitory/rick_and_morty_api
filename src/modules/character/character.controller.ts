@@ -1,7 +1,13 @@
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { CharacterService } from './character.service';
-import { CreateCharacterDTO, UpdateCharacterDTO } from './character.dto';
+import {
+  CreateCharacterDTO,
+  ECharacterStatus,
+  UpdateCharacterDTO,
+} from './character.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Characters')
 @Controller('character')
 export class CharacterController {
   constructor(private readonly characterService: CharacterService) {}
@@ -58,7 +64,7 @@ export class CharacterController {
     try {
       const updatedCharacter = await this.characterService.updateCharacter(
         characterId,
-        { status: 'SUSPENDED' },
+        { status: ECharacterStatus.CANCELED },
       );
       return updatedCharacter;
     } catch (error) {

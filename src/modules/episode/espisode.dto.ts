@@ -1,13 +1,25 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+
+export enum StatusEnum {
+  ACTIVE = 'ACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  CANCELED = 'CANCELED',
+}
 
 export class CreateEpisodeDTO {
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @IsString()
+  @IsEnum(StatusEnum)
   @IsNotEmpty()
-  status: 'ACTIVE' | 'SUSPENDED' | 'CANCELED';
+  status: StatusEnum;
 
   @IsNumber()
   @IsNotEmpty()
@@ -17,13 +29,6 @@ export class CreateEpisodeDTO {
   @IsNotEmpty()
   duration: string;
 
-  participation: {
-    userId: string;
-    participations?: {
-      init: string;
-      finish: string;
-    }[];
-  }[];
   @IsString()
   @IsNotEmpty()
   air_date: string;
@@ -38,9 +43,9 @@ export class EditEpisodeDTO {
   @IsOptional()
   name?: string;
 
-  @IsString()
+  @IsEnum(StatusEnum)
   @IsOptional()
-  status?: 'ACTIVE' | 'SUSPENDED' | 'CANCELED';
+  status?: StatusEnum;
 
   @IsNumber()
   @IsOptional()
