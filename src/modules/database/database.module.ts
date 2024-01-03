@@ -20,13 +20,15 @@ import { RickAndMortyApiService } from 'src/external-services/rick-and-morty-api
   imports: [
     MongooseModule.forRootAsync({
       useFactory: (configService: ConfigType<typeof config>) => {
-        const pass = configService.PASSWORD_DB;
-        const host = configService.DB_HOST;
-        const port = configService.DB_PORT;
-        const name = configService.DB_NAME;
-        const user = configService.USER_DB;
+        // const pass = configService.PASSWORD_DB;
+        // const host = configService.DB_HOST;
+        // const port = configService.DB_PORT;
+        // const name = configService.DB_NAME;
+        // const user = configService.USER_DB;
+        const productionDb = configService.PRODUCTION_DB;
         return {
-          uri: `mongodb://${user}:${pass}@${host}:${port}/${name}?authSource=admin`,
+          // uri: `mongodb://${user}:${pass}@${host}:${port}/${name}?authSource=admin`,
+          uri: productionDb,
         };
       },
       inject: [config.KEY],

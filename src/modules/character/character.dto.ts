@@ -1,9 +1,25 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export enum ECharacterStatus {
   ACTIVE = 'ACTIVE',
   SUSPENDED = 'SUSPENDED',
   CANCELED = 'CANCELED',
+}
+
+export class GetCharactersDTO {
+  @ApiProperty({ required: false }) // Aquí configuras si es requerido o no
+  type: ECharacterStatus;
+
+  @ApiProperty({
+    required: false,
+    description:
+      'Filtrar por especie de los personajes en mayuscula, por ejemplo: HUMAN, ALIEN, etc...',
+  })
+  species: string;
+
+  @ApiProperty({ required: false })
+  page: number;
 }
 
 export class CreateCharacterDTO {

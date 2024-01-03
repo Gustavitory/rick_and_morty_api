@@ -3,6 +3,7 @@ import { CharacterService } from './character.service';
 import {
   CreateCharacterDTO,
   ECharacterStatus,
+  GetCharactersDTO,
   UpdateCharacterDTO,
 } from './character.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -13,16 +14,13 @@ export class CharacterController {
   constructor(private readonly characterService: CharacterService) {}
 
   @Get()
-  async getAllCharacters(
-    @Query('type') type: 'ACTIVE' | 'SUSPENDED' | 'CANCELED',
-    @Query('species') species: string,
-    @Query('page') page: number,
-  ) {
+  // @ApiQuery({ type: GetCharactersDTO })
+  async getAllCharacters(@Query() query: GetCharactersDTO) {
     try {
       const characters = await this.characterService.getAllCharacters(
-        type,
-        species,
-        page,
+        query.type,
+        query.species,
+        query.page,
       );
       return characters;
     } catch (error) {
