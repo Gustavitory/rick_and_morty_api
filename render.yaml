@@ -1,0 +1,20 @@
+services:
+  - name: api
+    envVars:
+      - key: NODE_ENV
+        value: ${NODE_ENV}
+    startCommand: npm run start:dev
+    httpPort: 3000
+    links:
+      - service: rick_and_morty_host
+
+  - name: rick_and_morty_host
+    envVars:
+      - key: MONGO_INITDB_ROOT_USERNAME
+        value: ${USER_DB}
+      - key: MONGO_INITDB_ROOT_PASSWORD
+        value: ${PASSWORD_DB}
+    httpPort: 27017
+    disk:
+      name: rick_and_morty_data
+      mountPath: /data/db

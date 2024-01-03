@@ -5,6 +5,18 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+
+export class GetEpisodesDTO {
+  @ApiProperty({
+    required: false,
+    description: 'Filtrar por número de la temporada.',
+  }) // Aquí configuras si es requerido o no
+  season: number;
+
+  @ApiProperty({ required: false })
+  page: number;
+}
 
 export enum StatusEnum {
   ACTIVE = 'ACTIVE',

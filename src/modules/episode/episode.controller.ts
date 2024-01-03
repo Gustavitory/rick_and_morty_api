@@ -1,6 +1,11 @@
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { EpisodeService } from './episode.service';
-import { CreateEpisodeDTO, EditEpisodeDTO, StatusEnum } from './espisode.dto';
+import {
+  CreateEpisodeDTO,
+  EditEpisodeDTO,
+  GetEpisodesDTO,
+  StatusEnum,
+} from './espisode.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Episodes')
@@ -9,12 +14,13 @@ export class EpisodeController {
   constructor(private readonly episodeService: EpisodeService) {}
 
   @Get()
-  async getAllEpisodes(
-    @Query('season') season: number,
-    @Query('page') page: number,
-  ) {
+  // @ApiQuery({ type: GetEpisodesDTO })
+  async getAllEpisodes(@Query() query: GetEpisodesDTO) {
     try {
-      const episodes = await this.episodeService.getAllEpisodes(season, page);
+      const episodes = await this.episodeService.getAllEpisodes(
+        query.season,
+        query.page,
+      );
       return episodes;
     } catch (error) {
       return { error: error.message };
